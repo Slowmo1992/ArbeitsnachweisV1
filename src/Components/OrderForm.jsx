@@ -43,7 +43,8 @@ const OrderForm = ({ onSaveOrder, editOrder }) => {
     }));
   };
 
-  const handleSave = () => {
+  const handleSaveOrder = (e) => {
+    e.preventDefault();
     const updatedOrder = {
       orderNumber: orderNumber.value,
       customerName: customerName.value,
@@ -60,7 +61,21 @@ const OrderForm = ({ onSaveOrder, editOrder }) => {
     html2canvas(signatureRef.current).then((canvas) => {
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF();
-      pdf.addImage(imgData, 'PNG', 10, 10, 100, 40);
+
+      pdf.text(`Auftragsnummer: ${orderNumber.value}`, 10, 10);
+      pdf.text(`Kundenname: ${customerName.value}`, 10, 20);
+      pdf.text(`Bestellnummer: ${purchaseOrderNumber.value}`, 10, 30);
+
+      employees.forEach((employee, index) => {
+        pdf.text(`Mitarbeiter ${index + 1}: ${employee}`, 10, 40 + index * 10);
+        pdf.text(`Datum: ${workDetails[employee]?.date || 'N/A'}, Arbeitsstunden: ${workDetails[employee]?.hours || 'N/A'}`, 10, 50 + index * 10);
+      });
+
+      pdf.text(`Arbeitserledigung: ${workDescriptions.value}`, 10, 60 + employees.length * 10);
+      pdf.text(`Material: ${materials.value}`, 10, 70 + employees.length * 10);
+
+      pdf.addImage(imgData, 'PNG', 10, 80 + employees.length * 10, 100, 40);
+
       pdf.save('Auftrag_mit_Unterschrift.pdf');
     });
   };
@@ -68,7 +83,7 @@ const OrderForm = ({ onSaveOrder, editOrder }) => {
   return (
     <div>
       <h2>Auftragsformular</h2>
-      <form>
+      <form onSubmit={handleSaveOrder}>
         <label>
           Auftragsnummer:
           <input type="text" {...orderNumber} />
@@ -121,7 +136,7 @@ const OrderForm = ({ onSaveOrder, editOrder }) => {
           <textarea {...materials} rows={4} cols={50} placeholder="Erfassung des verwendeten Materials" />
         </label>
         <br />
-        <button type="button" onClick={handleSave}>Speichern</button>
+        <button type="submit">Speichern</button>
         <button type="button" onClick={handleGeneratePDF}>PDF generieren</button>
       </form>
     </div>
