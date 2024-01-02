@@ -2,21 +2,34 @@ import React, { useState, useRef, useEffect } from 'react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
+const useFormInput = (initialValue) => {
+    const [value, setValue] = useState(initialValue);
+    const handleChange = (e) => setValue(e.target.value);
+    return {
+        value,
+        onChange: handleChange
+    };
+};
+
 const OrderForm = ({ onSaveOrder, editOrder }) => {
-    const [orderNumber, setOrderNumber] = useState("");
-    const [customerName, setCustomerName] = useState("");
-    const [purchaseOrderNumber, setPurchaseOrderNumber] = useState("");
+    const orderNumber = useFormInput("");
+    const customerName = useFormInput("");
+    const purchaseOrderNumber = useFormInput("");
     const [employees, setEmployees] = useState([]);
     const [workDetails, setWorkDetails] = useState({});
+    const workDescriptions = useFormInput("");
+    const materials = useFormInput("");
     const signatureRef = useRef(null);
 
     useEffect(() => {
         if (editOrder) {
-            setOrderNumber(editOrder.orderNumber || "");
-            setCustomerName(editOrder.customerName || "");
-            setPurchaseOrderNumber(editOrder.purchaseOrderNumber || "");
+            orderNumber.onChange({ target: { value: editOrder.orderNumber } });
+            customerName.onChange({ target: { value: editOrder.customerName } });
+            purchaseOrderNumber.onChange({ target: { value: editOrder.purchaseOrderNumber } });
             setEmployees(editOrder.employees || []);
             setWorkDetails(editOrder.workDetails || {});
+            workDescriptions.onChange({ target: { value: editOrder.workDescriptions || "" } });
+            materials.onChange({ target: { value: editOrder.materials || "" } });
         }
     }, [editOrder]);
 
@@ -32,7 +45,15 @@ const OrderForm = ({ onSaveOrder, editOrder }) => {
 
     const handleSaveOrder = (e) => {
         e.preventDefault();
-        const updatedOrder = { orderNumber, customerName, purchaseOrderNumber, employees, workDetails };
+        const updatedOrder = {
+            orderNumber: orderNumber.value,
+            customerName: customerName.value,
+            purchaseOrderNumber: purchaseOrderNumber.value,
+            employees,
+            workDetails,
+            workDescriptions: workDescriptions.value,
+            materials: materials.value
+        };
         onSaveOrder(updatedOrder);
 
         html2canvas(signatureRef.current).then((canvas) => {
@@ -49,17 +70,17 @@ const OrderForm = ({ onSaveOrder, editOrder }) => {
             <form onSubmit={handleSaveOrder}>
                 <label>
                     Auftragsnummer:
-                    <input type="text" value={orderNumber} onChange={(e) => setOrderNumber(e.target.value)} />
+                    <input type="text" {...orderNumber} />
                 </label>
                 <br />
                 <label>
                     Kundenname:
-                    <input type="text" value={customerName} onChange={(e) => setCustomerName(e.target.value)} />
+                    <input type="text" {...customerName} />
                 </label>
                 <br />
                 <label>
                     Bestellnummer:
-                    <input type="text" value={purchaseOrderNumber} onChange={(e) => setPurchaseOrderNumber(e.target.value)} />
+                    <input type="text" {...purchaseOrderNumber} />
                 </label>
                 <br />
                 <label>
@@ -68,7 +89,6 @@ const OrderForm = ({ onSaveOrder, editOrder }) => {
                         <option value="Mitarbeiter 1">Mitarbeiter 1</option>
                         <option value="Mitarbeiter 2">Mitarbeiter 2</option>
                         <option value="Mitarbeiter 3">Mitarbeiter 3</option>
-                        {/* Fügen Sie hier weitere Mitarbeiter hinzu, falls benötigt */}
                     </select>
                 </label>
                 <br />
@@ -77,19 +97,11 @@ const OrderForm = ({ onSaveOrder, editOrder }) => {
                         <h3>{employee}</h3>
                         <label>
                             Datum:
-                            <input 
-                                type="date" 
-                                value={workDetails[employee]?.date || ''} 
-                                onChange={(e) => handleWorkDetailChange(employee, 'date', e.target.value)} 
-                            />
+                            <input type="date" value={workDetails[employee]?.date || ''} onChange={(e) => handleWorkDetailChange(employee, 'date', e.target.value)} />
                         </label>
                         <label>
                             Arbeitsstunden:
-                            <input 
-                                type="number" 
-                                value={workDetails[employee]?.hours || ''} 
-                                onChange={(e) => handleWorkDetailChange(employee, 'hours', e.target.value)} 
-                            />
+                            <input type="number" value={workDetails[employee]?.hours || ''} onChange={(e) => handleWorkDetailChange(employee, 'hours', e.target.value)} />
                         </label>
                     </div>
                 ))}
@@ -97,6 +109,16 @@ const OrderForm = ({ onSaveOrder, editOrder }) => {
                 <div ref={signatureRef} style={{ border: '1px solid black', width: '200px', height: '100px' }}>
                     Unterschriftsfeld
                 </div>
+                <br />
+                <label>
+                    Arbeitserledigung (für den gesamten Auftrag):
+                    <textarea {...workDescriptions} rows={4} cols={50} placeholder="Beschreibung der erledigten Arbeiten für den gesamten Auftrag" />
+                </label>
+                <br />
+                <label>
+                    Material:
+                    <textarea {...materials} rows={4} cols={50} placeholder="Erfassung des verwendeten Materials" />
+                </label>
                 <br />
                 <button type="submit">Auftrag speichern und PDF generieren</button>
             </form>
