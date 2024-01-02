@@ -27,7 +27,7 @@ function App() {
 
       <OrderForm onSaveOrder={handleSaveOrder} editOrder={editIndex !== null ? orders[editIndex] : null} />
 
-      <OrderManagementPage orders={orders} />
+      <OrderManagementPage orders={orders} onSaveOrder={handleSaveOrder} onEditOrder={handleEditOrder} />
     </div>
   );
 }

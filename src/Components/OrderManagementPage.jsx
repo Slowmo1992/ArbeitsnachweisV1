@@ -1,26 +1,9 @@
 import React, { useState, useRef } from 'react';
 import jsPDF from 'jspdf';
 
-const OrderManagementPage = () => {
-  const [orders, setOrders] = useState([]);
+const OrderManagementPage = ({ orders, onSaveOrder, onEditOrder }) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [editIndex, setEditIndex] = useState(null);
   const pdfRef = useRef(null);
-
-  const handleSaveOrder = (newOrder) => {
-    if (editIndex !== null) {
-      const updatedOrders = [...orders];
-      updatedOrders[editIndex] = newOrder;
-      setOrders(updatedOrders);
-      setEditIndex(null);
-    } else {
-      setOrders([...orders, newOrder]);
-    }
-  };
-
-  const handleEditOrder = (index) => {
-    setEditIndex(index);
-  };
 
   const handleExportToPDF = () => {
     const doc = new jsPDF();
@@ -57,7 +40,7 @@ const OrderManagementPage = () => {
           <div key={index} style={{ border: '1px solid #ccc', padding: '10px', marginBottom: '10px' }}>
             <h3>Auftragsnummer: {order.orderNumber}</h3>
             <p>Kundenname: {order.customerName}</p>
-            <button onClick={() => handleEditOrder(index)}>Bearbeiten</button>
+            <button onClick={() => onEditOrder(index)}>Bearbeiten</button>
           </div>
         ))
       ) : (
