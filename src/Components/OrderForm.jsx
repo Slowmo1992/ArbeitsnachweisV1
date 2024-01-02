@@ -122,12 +122,12 @@ const OrderForm = ({ onSaveOrder, editOrder }) => {
           </div>
         ))}
         <br />
-        <div ref={signatureRef} style={{ border: '1px solid black', width: '200px', height: '100px' }}>
+        <div ref={signatureRef} style={{ border: '1px solid black', width: '120px', height: '50px' }}>
           Unterschriftsfeld
         </div>
         <br />
         <label>
-          Arbeitserledigung (für den gesamten Auftrag):
+          Arbeiten:
           <textarea {...workDescriptions} rows={4} cols={50} placeholder="Beschreibung der erledigten Arbeiten für den gesamten Auftrag" />
         </label>
         <br />
