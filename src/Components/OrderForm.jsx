@@ -11,7 +11,7 @@ const useFormInput = (initialValue) => {
   };
 };
 
-const OrderForm = ({ onSaveOrder, editOrder }) => {
+const OrderForm = ({ onSaveOrder, editOrder, availableEmployees }) => {
   const orderNumber = useFormInput("");
   const customerName = useFormInput("");
   const purchaseOrderNumber = useFormInput("");
@@ -102,9 +102,11 @@ const OrderForm = ({ onSaveOrder, editOrder }) => {
         <label>
           Mitarbeiter:
           <select multiple value={employees} onChange={(e) => setEmployees(Array.from(e.target.selectedOptions, option => option.value))}>
-            <option value="Mitarbeiter 1">Mitarbeiter 1</option>
-            <option value="Mitarbeiter 2">Mitarbeiter 2</option>
-            <option value="Mitarbeiter 3">Mitarbeiter 3</option>
+            {availableEmployees.map((employee, index) => (
+              <option key={index} value={employee}>
+                {employee}
+              </option>
+            ))}
           </select>
         </label>
         <br />

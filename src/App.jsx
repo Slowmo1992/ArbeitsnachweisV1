@@ -8,6 +8,7 @@ function App() {
   const [editIndex, setEditIndex] = useState(null);
   const [showSelection, setShowSelection] = useState(true);
   const [showOrderSearch, setShowOrderSearch] = useState(false);
+  const [availableEmployees, setAvailableEmployees] = useState([]);
 
   const handleSaveOrder = (newOrder) => {
     if (editIndex !== null) {
@@ -41,11 +42,14 @@ function App() {
     setShowSelection(false);
   };
 
+  const handleAddEmployee = (employeeName) => {
+    setAvailableEmployees(prevEmployees => [...prevEmployees, employeeName]);
+  };
+
   return (
     <div className="App">
-
       {showSelection ? (
-        <SelectionPage onNewOrder={handleNewOrder} onSearchOrders={handleSearchOrders} />
+        <SelectionPage onNewOrder={handleNewOrder} onSearchOrders={handleSearchOrders} onAddEmployee={handleAddEmployee} availableEmployees={availableEmployees} />
       ) : showOrderSearch ? (
         <>
           <button onClick={handleGoBack} style={{ marginBottom: '20px' }}>Zurück zur Auswahlseite</button>
@@ -54,7 +58,7 @@ function App() {
       ) : (
         <>
           <button onClick={handleGoBack} style={{ marginBottom: '20px' }}>Zurück zur Auswahlseite</button>
-          <OrderForm onSaveOrder={handleSaveOrder} editOrder={editIndex !== null ? orders[editIndex] : null} />
+          <OrderForm onSaveOrder={handleSaveOrder} editOrder={editIndex !== null ? orders[editIndex] : null} availableEmployees={availableEmployees} />
         </>
       )}
     </div>
