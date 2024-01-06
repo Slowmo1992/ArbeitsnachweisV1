@@ -33,14 +33,39 @@ const OrderForm = ({ onSaveOrder, editOrder, availableEmployees }) => {
     }
   }, [editOrder]);
 
-  const handleWorkDetailChange = (employee, field, value) => {
+  const handleAddWorkDay = (employee) => {
     setWorkDetails(prev => ({
       ...prev,
-      [employee]: {
-        ...prev[employee],
-        [field]: value
-      }
+      [employee]: [
+        ...(prev[employee] || []),
+        { date: '', hours: '' }
+      ]
     }));
+  };
+
+  const handleRemoveWorkDay = (employee, index) => {
+    setWorkDetails(prev => {
+      const updatedEmployeeDetails = [...prev[employee]];
+      updatedEmployeeDetails.splice(index, 1);
+      return {
+        ...prev,
+        [employee]: updatedEmployeeDetails
+      };
+    });
+  };
+
+  const handleWorkDetailChange = (employee, index, field, value) => {
+    setWorkDetails(prev => {
+      const updatedEmployeeDetails = [...prev[employee]];
+      updatedEmployeeDetails[index] = {
+        ...updatedEmployeeDetails[index],
+        [field]: value
+      };
+      return {
+        ...prev,
+        [employee]: updatedEmployeeDetails
+      };
+    });
   };
 
   const handleSaveOrder = (e) => {
@@ -113,14 +138,20 @@ const OrderForm = ({ onSaveOrder, editOrder, availableEmployees }) => {
         {employees.map((employee) => (
           <div key={employee}>
             <h3>{employee}</h3>
-            <label>
-              Datum:
-              <input type="date" value={workDetails[employee]?.date || ''} onChange={(e) => handleWorkDetailChange(employee, 'date', e.target.value)} />
-            </label>
-            <label>
-              Arbeitsstunden:
-              <input type="number" value={workDetails[employee]?.hours || ''} onChange={(e) => handleWorkDetailChange(employee, 'hours', e.target.value)} />
-            </label>
+            {workDetails[employee]?.map((detail, index) => (
+              <div key={index}>
+                <label>
+                  Datum:
+                  <input type="date" value={detail.date || ''} onChange={(e) => handleWorkDetailChange(employee, index, 'date', e.target.value)} />
+                </label>
+                <label>
+                  Arbeitsstunden:
+                  <input type="number" value={detail.hours || ''} onChange={(e) => handleWorkDetailChange(employee, index, 'hours', e.target.value)} />
+                </label>
+                <button type="button" onClick={() => handleRemoveWorkDay(employee, index)}>Tag entfernen</button>
+              </div>
+            ))}
+            <button type="button" onClick={() => handleAddWorkDay(employee)}>Weiteren Tag hinzufügen</button>
           </div>
         ))}
         <br />
