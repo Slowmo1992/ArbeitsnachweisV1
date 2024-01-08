@@ -1,28 +1,30 @@
 import React, { useState } from 'react';
+import './App.css';
 import OrderForm from './Components/OrderForm';
 import OrderSearchPage from './Components/OrderSearchPage';
 import SelectionPage from './Components/SelectionPage';
+import OrderManagementPage from './Components/OrderManagementPage';
 
 function App() {
   const [orders, setOrders] = useState([]);
-  const [editIndex, setEditIndex] = useState(null);
+  const [editOrderIndex, setEditOrderIndex] = useState(null);
   const [showSelection, setShowSelection] = useState(true);
   const [showOrderSearch, setShowOrderSearch] = useState(false);
   const [availableEmployees, setAvailableEmployees] = useState([]);
 
   const handleSaveOrder = (newOrder) => {
-    if (editIndex !== null) {
+    if (editOrderIndex !== null) {
       const updatedOrders = [...orders];
-      updatedOrders[editIndex] = newOrder;
+      updatedOrders[editOrderIndex] = newOrder;
       setOrders(updatedOrders);
-      setEditIndex(null);
+      setEditOrderIndex(null);
     } else {
       setOrders([...orders, newOrder]);
     }
   };
 
   const handleEditOrder = (index) => {
-    setEditIndex(index);
+    setEditOrderIndex(index);
     setShowSelection(false);
     setShowOrderSearch(false);
   };
@@ -58,7 +60,7 @@ function App() {
       ) : (
         <>
           <button onClick={handleGoBack} style={{ marginBottom: '20px' }}>Zurück zur Auswahlseite</button>
-          <OrderForm onSaveOrder={handleSaveOrder} editOrder={editIndex !== null ? orders[editIndex] : null} availableEmployees={availableEmployees} />
+          <OrderForm onSaveOrder={handleSaveOrder} editOrder={editOrderIndex !== null ? orders[editOrderIndex] : null} availableEmployees={availableEmployees} />
         </>
       )}
     </div>

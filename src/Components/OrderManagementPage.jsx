@@ -1,9 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React from 'react';
 import jsPDF from 'jspdf';
 
 const OrderManagementPage = ({ orders, onSaveOrder, onEditOrder }) => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const pdfRef = useRef(null);
 
   const handleExportToPDF = () => {
     const doc = new jsPDF();
@@ -19,35 +17,27 @@ const OrderManagementPage = ({ orders, onSaveOrder, onEditOrder }) => {
     doc.save("Auftragsliste.pdf");
   };
 
-  const filteredOrders = orders.filter(order => 
-    order.orderNumber.includes(searchTerm) || order.customerName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleEdit = (index) => {
+    onEditOrder(index);
+  };
 
   return (
     <div className="OrderManagementPage">
       <h1>Auftragsverwaltung</h1>
 
-      <input 
-        type="text" 
-        placeholder="Suche nach Auftragsnummer oder Kundenname..." 
-        value={searchTerm} 
-        onChange={(e) => setSearchTerm(e.target.value)} 
-        style={{ marginBottom: '20px' }}
-      />
+      <button onClick={handleExportToPDF} style={{ marginBottom: '20px' }}>Aufträge als PDF exportieren</button>
 
-      {filteredOrders.length > 0 ? (
-        filteredOrders.map((order, index) => (
+      {orders.length > 0 ? (
+        orders.map((order, index) => (
           <div key={index} style={{ border: '1px solid #ccc', padding: '10px', marginBottom: '10px' }}>
             <h3>Auftragsnummer: {order.orderNumber}</h3>
             <p>Kundenname: {order.customerName}</p>
-            <button onClick={() => onEditOrder(index)}>Bearbeiten</button>
+            <button onClick={() => handleEdit(index)}>Bearbeiten</button>
           </div>
         ))
       ) : (
         <p>Keine Aufträge gefunden.</p>
       )}
-
-      <button onClick={handleExportToPDF} style={{ marginTop: '20px' }}>Aufträge als PDF exportieren</button>
     </div>
   );
 }
